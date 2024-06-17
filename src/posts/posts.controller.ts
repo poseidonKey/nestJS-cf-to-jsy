@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { PostModel, PostsService } from './posts.service';
+import { PostsService } from './posts.service';
 
 @Controller('posts')
 export class PostsController {
@@ -17,7 +17,7 @@ export class PostsController {
    *     모든 post를 가져온다
    */
   @Get()
-  getPosts(): PostModel[] {
+  getPosts() {
     return this.postsService.getAllPosts();
   }
   /**
@@ -25,7 +25,7 @@ export class PostsController {
    *  id에 해당하는 post를 가져온다
    */
   @Get(':id')
-  getPost(@Param('id') id: string): PostModel {
+  getPost(@Param('id') id: string) {
     return this.postsService.getPostById(+id);
   }
 
