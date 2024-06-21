@@ -33,9 +33,11 @@ export class PostsService {
     return post;
   }
 
-  async createPost(title: string, author: string, content: string) {
+  async createPost(title: string, authorId: number, content: string) {
     const post = this.postsRepository.create({
-      author,
+      author: {
+        id: authorId,
+      },
       title,
       content,
       likeCount: 0,
@@ -47,12 +49,7 @@ export class PostsService {
     return newPost;
   }
 
-  async updatePost(
-    postId: number,
-    author?: string,
-    title?: string,
-    content?: string,
-  ) {
+  async updatePost(postId: number, title?: string, content?: string) {
     /**
      * save의 기능
      *  1) 만약 데이터가 존재하지 않는다면(id 기준으로) 생성한다
@@ -66,7 +63,6 @@ export class PostsService {
     });
     if (!post) throw new NotFoundException('no data');
 
-    if (author) post.author = author;
     if (title) post.title = title;
     if (content) post.content = content;
     const newPost = await this.postsRepository.save(post);
