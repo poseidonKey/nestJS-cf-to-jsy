@@ -104,7 +104,7 @@ export class AuthService {
    * 3. type: 'access' | 'refresh'
    */
 
-  singToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
+  signToken(user: Pick<UsersModel, 'email' | 'id'>, isRefreshToken: boolean) {
     const payload = {
       email: user.email,
       sub: user.id,
@@ -119,8 +119,8 @@ export class AuthService {
 
   loginUser(user: Pick<UsersModel, 'email' | 'id'>) {
     return {
-      accessToken: this.singToken(user, false),
-      refreshToken: this.singToken(user, true),
+      accessToken: this.signToken(user, false),
+      refreshToken: this.signToken(user, true),
     };
   }
 
@@ -161,5 +161,33 @@ export class AuthService {
     });
 
     return this.loginUser(newUser);
+  }
+
+  // 토큰 검증
+  verifyToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: JWT_SECRET,
+    });
+  }
+
+  // 토큰 재발급
+  rotateToken(token: string, isRefreshToken: boolean) {
+    const decoded = this.jwtService.verify(token, {
+      secret: JWT_SECRET,
+    });
+
+    /**
+     * decoded에 있는 정보
+     * sub :id
+     * email: email
+     * type : 'access' 인가 'refresh'
+     */
+    if (decoded.type !== 'refresh') {
+      throw new UnauthorizedException(
+        '토큰 재 발급은 refresh 토큰 만으로만 가능합니다.',
+      );
+    }
+
+    return this.signToken({ ...decoded }, isRefreshToken);
   }
 }
