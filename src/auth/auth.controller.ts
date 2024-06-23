@@ -1,10 +1,11 @@
-import { Body, Controller, Post, Headers } from '@nestjs/common';
+import { Body, Controller, Post, Headers, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   MaxLengthPip,
   MinLengthPipe,
   // PasswordPipe,
 } from './pipe/password.pipe';
+import { BasicTokenGuard } from './guard/basic-token.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +36,7 @@ export class AuthController {
   }
 
   @Post('login/email')
+  @UseGuards(BasicTokenGuard)
   postLoginEmail(@Headers('authorization') rawToken: string) {
     // loginEmail(@Body('email') email: string, @Body('password') password: string) {
     // email:password 가 Base 64로 변형돼 있다
