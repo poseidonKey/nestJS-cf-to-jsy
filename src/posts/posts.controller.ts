@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  // DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -25,8 +27,8 @@ export class PostsController {
    *  id에 해당하는 post를 가져온다
    */
   @Get(':id')
-  getPost(@Param('id') id: string) {
-    return this.postsService.getPostById(+id);
+  getPost(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.getPostById(id);
   }
 
   /**
@@ -38,6 +40,7 @@ export class PostsController {
     @Body('authorId') authorId: number,
     @Body('title') title: string,
     @Body('content') content: string,
+    // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean, // DefaultValue연습용
   ) {
     return this.postsService.createPost(title, authorId, content);
   }
@@ -47,11 +50,11 @@ export class PostsController {
    */
   @Put(':id')
   putPost(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('title') title?: string,
     @Body('content') content?: string,
   ) {
-    return this.postsService.updatePost(+id, title, content);
+    return this.postsService.updatePost(id, title, content);
   }
 
   /**
@@ -59,7 +62,7 @@ export class PostsController {
    *  id에 해당하는 post를 삭제한다
    */
   @Delete(':id')
-  deletePost(@Param('id') id: string) {
-    return this.postsService.deletePost(+id);
+  deletePost(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.deletePost(id);
   }
 }
