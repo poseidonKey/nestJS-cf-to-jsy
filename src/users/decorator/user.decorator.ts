@@ -14,7 +14,7 @@ export const User = createParamDecorator(
         'Request 에 user 프로퍼티가 존재하지 않습니다. User 데코레이터는 AccessTokenGuard와 함께 사용해야 합니다.',
       );
     }
-    if (!user) {
+    if (user) {
       return user[data];
     }
 
