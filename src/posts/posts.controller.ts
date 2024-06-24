@@ -14,7 +14,7 @@ import {
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
-import { UsersModel } from 'src/users/entites/users.entity';
+// import { UsersModel } from 'src/users/entites/users.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -44,7 +44,8 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   postPost(
     // @Request() req: any, //User decorator를 사용하므로 더 이상 필요없다
-    @User() user: UsersModel,
+    @User('id') userId: number,
+    // @User() user: UsersModel,
 
     // @Body('authorId') authorId: number,
     @Body('title') title: string,
@@ -52,7 +53,7 @@ export class PostsController {
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean, // DefaultValue연습용
   ) {
     // const authorId = req.user.id;
-    return this.postsService.createPost(title, user.id, content);
+    return this.postsService.createPost(title, userId, content);
     // return this.postsService.createPost(title, authorId, content);
   }
   /**
