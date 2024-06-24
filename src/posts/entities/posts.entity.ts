@@ -1,3 +1,4 @@
+import { IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/users/entites/users.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -12,9 +13,19 @@ export class PostsModel extends BaseModel {
   // 2. null 이 될 수 없다.
   author: UsersModel;
 
-  @Column()
+  // @Column()
+  // title: string;
+  // @Column()
+  // content: string;
+
+  @IsString({
+    message: '타이틀은 string 타입을 입력해야 합니다.',
+  })
   title: string;
-  @Column()
+
+  @IsString({
+    message: 'content는 string 타입을 입력해야 합니다.',
+  })
   content: string;
 
   @Column()
