@@ -1,8 +1,10 @@
 import { Body, Controller, Post, Headers, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
-  MaxLengthPip,
-  MinLengthPipe,
+  // MaxLengthPipe,
+  // MinLengthPipe,
+  PasswordPipe,
+  // MinLengthPipe,
   // PasswordPipe,
 } from './pipe/password.pipe';
 import { BasicTokenGuard } from './guard/basic-token.guard';
@@ -65,7 +67,7 @@ export class AuthController {
   postRegisterEmail(
     @Body('nickname') nickname: string,
     @Body('email') email: string,
-    @Body('password', new MaxLengthPip(8, '최대길이'), new MinLengthPipe(3))
+    @Body('password', new PasswordPipe()) // @Body('password', new MaxLengthPipe(8, '최대길이'), new MinLengthPipe(3)) // @Body('password', new MaxLengthPipe(8, '최대길이'))
     password: string,
     // @Body('password', PasswordPipe) password: string,
   ) {

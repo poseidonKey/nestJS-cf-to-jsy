@@ -43,7 +43,7 @@ export class BearerTokenGuard implements CanActivate {
 @Injectable()
 export class AccessTokenGuard extends BearerTokenGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    super.canActivate(context);
+    await super.canActivate(context);
 
     const req = context.switchToHttp().getRequest();
     if (req.tokenType !== 'access') {
@@ -57,9 +57,11 @@ export class AccessTokenGuard extends BearerTokenGuard {
 @Injectable()
 export class RefreshTokenGuard extends BearerTokenGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    super.canActivate(context);
+    await super.canActivate(context);
 
     const req = context.switchToHttp().getRequest();
+    // const isRefresh = req.tokenType;
+
     if (req.tokenType !== 'refresh') {
       throw new UnauthorizedException('refresh Token이 아닙니다.');
     }

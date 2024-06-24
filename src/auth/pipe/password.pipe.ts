@@ -18,13 +18,12 @@ export class PasswordPipe implements PipeTransform {
 }
 
 @Injectable()
-export class MaxLengthPip implements PipeTransform {
+export class MaxLengthPipe implements PipeTransform {
   constructor(
     private readonly length: number,
     private readonly subject: string,
   ) {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: any) {
     if (value.toString.length > this.length) {
       throw new BadRequestException(
         `${this.subject}의 최대 길이는 ${this.length}`,
@@ -37,10 +36,11 @@ export class MaxLengthPip implements PipeTransform {
 @Injectable()
 export class MinLengthPipe implements PipeTransform {
   constructor(private readonly length: number) {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  transform(value: any, metadata: ArgumentMetadata) {
+  transform(value: any) {
     if (value.toString.length < this.length) {
-      throw new BadRequestException(`비밀번호의 최소 길이는 ${this.length}`);
+      throw new BadRequestException(
+        ` current : ${value.toString().length} ->비밀번호의 최소 길이는 ${this.length}`,
+      );
     }
     return value.toString();
   }
