@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   // Put,
   // Request,
   UseGuards,
@@ -17,6 +18,7 @@ import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PaginatePostDto } from './dto/pagenate-post.dto';
 // import { UsersModel } from 'src/users/entites/users.entity';
 
 @Controller('posts')
@@ -27,9 +29,18 @@ export class PostsController {
    *     모든 post를 가져온다
    */
   @Get()
-  getPosts() {
-    return this.postsService.getAllPosts();
+  getPosts(@Query() query: PaginatePostDto) {
+    return this.postsService.paginatePosts(query);
+    // return this.postsService.getAllPosts();
   }
+
+  @Post('random')
+  @UseGuards(AccessTokenGuard)
+  async postPostsRandom(@User('id') userId: number) {
+    await this.postsService.generatePosts(userId);
+    return true;
+  }
+
   /**
    * 2) GET /posts/:id
    *  id에 해당하는 post를 가져온다

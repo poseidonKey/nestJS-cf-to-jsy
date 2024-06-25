@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { PostsModel } from './entities/posts.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PaginatePostDto } from './dto/pagenate-post.dto';
 
 export interface PostModel {
   id: number;
@@ -25,6 +26,40 @@ export class PostsService {
     return await this.postsRepository.find({
       relations: ['author'],
     });
+  }
+
+  async paginatePosts(dto: PaginatePostDto) {
+    const posts = await this.postsRepository.find({
+      where: {
+        id: MoreThan(dto.where__id_more_than ?? 0),
+      },
+      order: {
+        createdAt: dto.order__createdAt,
+      },
+      take: dto.take,
+    });
+    /**
+     * Response
+     *
+     * data:Data[]
+     * cursor:{
+     *   after:마짐ㄱ 데이터의 id
+     * }
+     * count:응답한 데이터의 갯수
+     * next : 다음 요청 할 때 사용할 URL
+     */
+    return {
+      data: posts,
+    };
+  }
+
+  async generatePosts(userId: number) {
+    for (let i = 0; i < 100; i++) {
+      await this.createPost(userId, {
+        title: `임의로 생성된 포스트 제목 ${i}`,
+        content: `임의로 생성된 포스트 내용 ${i}`,
+      });
+    }
   }
 
   async getPostById(id: number) {
