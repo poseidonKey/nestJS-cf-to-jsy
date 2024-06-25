@@ -1,17 +1,17 @@
 import { Body, Controller, Post, Headers, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  // MaxLengthPipe,
-  // MinLengthPipe,
-  PasswordPipe,
-  // MinLengthPipe,
-  // PasswordPipe,
-} from './pipe/password.pipe';
+import {} from // MaxLengthPipe,
+// MinLengthPipe,
+// PasswordPipe,
+// MinLengthPipe,
+// PasswordPipe,
+'./pipe/password.pipe';
 import { BasicTokenGuard } from './guard/basic-token.guard';
 import {
   // AccessTokenGuard,
   RefreshTokenGuard,
 } from './guard/bearer-token.guard';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -65,16 +65,13 @@ export class AuthController {
 
   @Post('register/email')
   postRegisterEmail(
-    @Body('nickname') nickname: string,
-    @Body('email') email: string,
-    @Body('password', new PasswordPipe()) // @Body('password', new MaxLengthPipe(8, '최대길이'), new MinLengthPipe(3)) // @Body('password', new MaxLengthPipe(8, '최대길이'))
-    password: string,
+    @Body() body: RegisterUserDto,
+    // @Body('nickname') nickname: string,
+    // @Body('email') email: string,
+    // @Body('password', new PasswordPipe()) // @Body('password', new MaxLengthPipe(8, '최대길이'), new MinLengthPipe(3)) // @Body('password', new MaxLengthPipe(8, '최대길이'))
+    // password: string,
     // @Body('password', PasswordPipe) password: string,
   ) {
-    return this.authService.registerWithEmail({
-      nickname,
-      email,
-      password,
-    });
+    return this.authService.registerWithEmail(body);
   }
 }
