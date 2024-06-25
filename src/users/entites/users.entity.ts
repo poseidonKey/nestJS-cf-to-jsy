@@ -7,8 +7,11 @@ import { IsEmail, IsString, Length } from 'class-validator';
 import { lengthValidationMessage } from 'src/common/validation-message/length-validation.message';
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
 import { emailValidationMessage } from 'src/common/validation-message/email-validation.message';
+import { Exclude } from 'class-transformer';
+// import { Exclude, Expose } from 'class-transformer';
 
 @Entity()
+// @Exclude() : 모든 엔티티를 감추고, 보여주고 싶은 것만 @Expose()를 통해 구현하면 된다.
 export class UsersModel extends BaseModel {
   @PrimaryGeneratedColumn()
   id: number;
@@ -47,6 +50,24 @@ export class UsersModel extends BaseModel {
   })
   @Length(3, 8, {
     message: lengthValidationMessage, //'비번은 3~8자 사이로 입력',
+  })
+  /**
+   * Request
+   * frontend -> backend
+   * plain object(json) -> class instance(dto)
+   *
+   * Response
+   * backend -> frontend
+   * claas instanc -> plain object
+   *
+   * option을 살펴보면
+   * toClassOnly :class instance로 변환 될 때만
+   * toPlainOnly :plain object로 변환 될 때만
+   *
+   * 따라서 현재 상황에서는 response에만 적용하면 된다.
+   */
+  @Exclude({
+    toPlainOnly: true,
   })
   password: string;
 
