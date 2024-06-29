@@ -6,6 +6,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/pagenate-post.dto';
 import { HOST, PROTOCOL } from 'src/common/const/env.consts';
+import { CommonService } from 'src/common/common.service';
 
 export interface PostModel {
   id: number;
@@ -21,6 +22,7 @@ export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   async getAllPosts() {
@@ -30,9 +32,10 @@ export class PostsService {
   }
 
   async paginatePosts(dto: PaginatePostDto) {
-    if (dto.page) {
-      return this.pagePaginatePosts(dto);
-    } else return this.cursorPaginatePosts(dto);
+    return this.commonService.paginate(dto, this.postsRepository, {}, 'posts');
+    // if (dto.page) {
+    //   return this.pagePaginatePosts(dto);
+    // } else return this.cursorPaginatePosts(dto);
   }
 
   async pagePaginatePosts(dto: PaginatePostDto) {
