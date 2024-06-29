@@ -149,6 +149,7 @@ export class PostsService {
         id: authorId,
       },
       ...postDto,
+      title: postDto.title,
       likeCount: 0,
       commentCount: 0,
     });

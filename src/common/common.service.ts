@@ -182,7 +182,11 @@ export class CommonService {
       // operator -> more_than
       // filter_mapper[operator] -> MoreThan
 
-      options[field] = FILTER_MAPPER[operator](value);
+      if (operator === 'i_like') {
+        options[field] = FILTER_MAPPER[operator](`%${value}`);
+      } else {
+        options[field] = FILTER_MAPPER[operator](value);
+      }
     }
     // where__id__between = 3,4
     // 만약에 split 대상 문자가 존재하지 않으면 길이가 무조건 1이다.
