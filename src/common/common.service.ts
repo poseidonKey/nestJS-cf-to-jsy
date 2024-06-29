@@ -1,7 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BasePaginationDto } from './dto/base-pagination.dto';
 import { BaseModel } from './entity/base.entity';
-import { FindManyOptions, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOptionsOrder,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
+import { FILTER_MAPPER } from './const/filter-mapper.const';
 
 @Injectable()
 export class CommonService {
@@ -35,6 +41,7 @@ export class CommonService {
      *
      * where__title__ilike
      */
+    const findOptions = this.composeFindOptions<T>(dto);
   }
 
   private composeFindOptions<T extends BaseModel>(
@@ -69,6 +76,76 @@ export class CommonService {
      * 4. order의 경우는 3-2와 같이 적용
      */
 
+    let where: FindOptionsWhere<T> = {};
+    let order: FindOptionsOrder<T> = {};
+
+    for (const [key, value] of Object.entries(dto)) {
+      if (key.startsWith('where__')) {
+        where = { ...where, ...this.parseWhereFilter(key, value) };
+      } else if (key.startsWith('order__')) {
+        order = { ...order, ...this.parseWhereFilter(key, value) };
+      }
+    }
+
+    return {
+      where,
+      order,
+      take: dto.take,
+      skip: dto.page ? dto.take * (dto.page - 1) : null,
+    };
+  }
+
+  private parseWhereFilter<T extends BaseModel>(
+    key: string,
+    value: any,
+  ): FindOptionsWhere<T> | FindOptionsOrder<T> {
+    const options: FindOptionsWhere<T> = {};
+    const split = key.split('__');
+    if (split.length !== 2 && split.length !== 3) {
+      throw new BadRequestException(
+        `where 필터는 '__'로 split 했을 때 길이기ㅏ 2 또는 3이어야 합니다. 문제되는 키값 : ${key}`,
+      );
+    }
+
+    if (split.length === 2) {
+      const [_, field] = split;
+      options[field] = value;
+    } else if (split.length === 3) {
+      // ['where', 'id', 'more_than']
+      const [_, field, operator] = split;
+      // const values = value.toString().split(',');
+      // field -> id
+      // operator -> more_than
+      // filter_mapper[operator] -> MoreThan
+
+      options[field] = FILTER_MAPPER[operator](value);
+    }
+    // where__id__between = 3,4
+    // 만약에 split 대상 문자가 존재하지 않으면 길이가 무조건 1이다.
+    // const values = value.toString().split(',')
+
+    // field -> id
+    // operator -> more_than
+    // FILTER_MAPPER[operator] -> MoreThan
+
+    return options;
+  }
+
+  private parseOrderFilter<T extends BaseModel>(
+    key: string,
+    value: any,
+  ): FindOptionsOrder<T> {
+    const order: FindOptionsOrder<T> = {};
+    const split = key.split('__');
+    if (split.length != 2) {
+      throw new BadRequestException(
+        'order 는 split 했을 때 길이가 2 이어야 합니다.',
+      );
+    }
+    const [_, field] = split;
+    order[field] = value;
+
+    return order;
     return;
   }
 }
