@@ -10,6 +10,8 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
+      whitelist: true,
+      forbidNonWhitelisted: true, // 등록되지 않은 쿼리 요청시 오류 메시지 반환
     }),
   );
   await app.listen(3000);

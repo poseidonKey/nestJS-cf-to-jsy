@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
 import { UsersModel } from 'src/users/entites/users.entity';
