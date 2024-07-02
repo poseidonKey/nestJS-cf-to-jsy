@@ -9,11 +9,9 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   // Put,
   // Request,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
@@ -21,7 +19,6 @@ import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/pagenate-post.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 // import { UsersModel } from 'src/users/entites/users.entity';
 
 @Controller('posts')
@@ -61,7 +58,6 @@ export class PostsController {
   // DTO :data transfer Object
   @Post()
   @UseGuards(AccessTokenGuard)
-  @UseInterceptors(FileInterceptor('image'))
   postPost(
     // @Request() req: any, //User decorator를 사용하므로 더 이상 필요없다
     @User('id') userId: number,
@@ -72,10 +68,11 @@ export class PostsController {
     // @Body('title') title: string,
     // @Body('content') content: string,
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean, // DefaultValue연습용
-    @UploadedFile() file?: Express.Multer.File,
+    // @UploadedFile() file?: Express.Multer.File,
   ) {
+    this.postsService.createPostImage(body);
     // const authorId = req.user.id;
-    return this.postsService.createPost(userId, body, file?.filename);
+    return this.postsService.createPost(userId, body);
     // return this.postsService.createPost(title, authorId, content);
   }
   /**
