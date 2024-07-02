@@ -56,6 +56,13 @@ export class PostsController {
    */
 
   // DTO :data transfer Object
+
+  /**
+   * transation : all or nothing 의미
+   * start
+   * commit -> save
+   * error -> rollback 즉 하나라도 문제가 있으면 모든 작업을 취소
+   */
   @Post()
   @UseGuards(AccessTokenGuard)
   postPost(

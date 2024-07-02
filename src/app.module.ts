@@ -22,6 +22,7 @@ import {
 } from './common/const/env-keys.const';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
+import { ImageModel } from './common/entity/image.entity';
 
 @Module({
   imports: [
@@ -45,7 +46,7 @@ import { PUBLIC_FOLDER_PATH } from './common/const/path.const';
       // password: 'postgres',
       database: process.env[ENV_DB_DATABASE_KEY],
       // database: 'postgres',
-      entities: [PostsModel, UsersModel],
+      entities: [PostsModel, UsersModel, ImageModel],
       synchronize: true,
     }),
     PostsModule,
