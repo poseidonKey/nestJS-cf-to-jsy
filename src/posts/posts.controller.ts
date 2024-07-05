@@ -19,6 +19,7 @@ import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/pagenate-post.dto';
+import { ImageModelType } from 'src/common/entity/image.entity';
 // import { UsersModel } from 'src/users/entites/users.entity';
 
 @Controller('posts')
@@ -65,7 +66,7 @@ export class PostsController {
    */
   @Post()
   @UseGuards(AccessTokenGuard)
-  postPost(
+  async postPost(
     // @Request() req: any, //User decorator를 사용하므로 더 이상 필요없다
     @User('id') userId: number,
     // @User() user: UsersModel,
@@ -77,9 +78,18 @@ export class PostsController {
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean, // DefaultValue연습용
     // @UploadedFile() file?: Express.Multer.File,
   ) {
-    this.postsService.createPostImage(body);
     // const authorId = req.user.id;
-    return this.postsService.createPost(userId, body);
+    const post = await this.postsService.createPost(userId, body);
+
+    for (let i = 0; i < body.images.length; i++) {
+      await this.postsService.createPostImage({
+        post,
+        order: i,
+        path: body.images[i],
+        type: ImageModelType.POST_IMAGE,
+      });
+    }
+    return this.postsService.getPostById(post.id);
     // return this.postsService.createPost(title, authorId, content);
   }
   /**

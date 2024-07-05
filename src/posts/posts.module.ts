@@ -10,6 +10,7 @@ import { UsersModel } from 'src/users/entites/users.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { CommonModule } from 'src/common/common.module';
+import { ImageModel } from 'src/common/entity/image.entity';
 
 // import {
 //   POST_IMAGE_PATH,
@@ -19,7 +20,7 @@ import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PostsModel, UsersModel]),
+    TypeOrmModule.forFeature([PostsModel, UsersModel, ImageModel]),
     AuthModule,
     UsersModule,
     CommonModule,
