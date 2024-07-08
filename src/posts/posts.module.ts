@@ -11,6 +11,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from 'src/users/users.module';
 import { CommonModule } from 'src/common/common.module';
 import { ImageModel } from 'src/common/entity/image.entity';
+import { PostsImagesService } from './image/images.service';
 
 // import {
 //   POST_IMAGE_PATH,
@@ -26,6 +27,12 @@ import { ImageModel } from 'src/common/entity/image.entity';
     CommonModule,
   ],
   controllers: [PostsController],
-  providers: [PostsService, JwtService, AuthService, UsersService],
+  providers: [
+    PostsService,
+    JwtService,
+    AuthService,
+    UsersService,
+    PostsImagesService,
+  ],
 })
 export class PostsModule {}

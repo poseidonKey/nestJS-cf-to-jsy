@@ -4,6 +4,7 @@ import {
   // DefaultValuePipe,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
@@ -20,11 +21,17 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/pagenate-post.dto';
 import { ImageModelType } from 'src/common/entity/image.entity';
+import { DataSource } from 'typeorm';
+import { PostsImagesService } from './image/images.service';
 // import { UsersModel } from 'src/users/entites/users.entity';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly dataSource: DataSource,
+    private readonly postsImagesService: PostsImagesService,
+  ) {}
   /**
    * 1) GET /posts
    *     모든 post를 가져온다
@@ -78,20 +85,38 @@ export class PostsController {
     // @Body('isPublic', new DefaultValuePipe(true)) isPublic: boolean, // DefaultValue연습용
     // @UploadedFile() file?: Express.Multer.File,
   ) {
-    // const authorId = req.user.id;
-    const post = await this.postsService.createPost(userId, body);
+    const qr = this.dataSource.createQueryRunner();
 
-    for (let i = 0; i < body.images.length; i++) {
-      await this.postsService.createPostImage({
-        post,
-        order: i,
-        path: body.images[i],
-        type: ImageModelType.POST_IMAGE,
-      });
+    await qr.connect();
+
+    try {
+      // const authorId = req.user.id;
+      const post = await this.postsService.createPost(userId, body, qr);
+
+      for (let i = 0; i < body.images.length; i++) {
+        await this.postsImagesService.createPostImage(
+          {
+            post,
+            order: i,
+            path: body.images[i],
+            type: ImageModelType.POST_IMAGE,
+          },
+          qr,
+        );
+      }
+      await qr.commitTransaction();
+      await qr.release();
+
+      return this.postsService.getPostById(post.id);
+      // return this.postsService.createPost(title, authorId, content);
+    } catch (error) {
+      await qr.rollbackTransaction();
+      await qr.release();
+
+      throw new InternalServerErrorException('error 가 났습니다.');
     }
-    return this.postsService.getPostById(post.id);
-    // return this.postsService.createPost(title, authorId, content);
   }
+
   /**
    * 4) PUT /posts/:id
    *  id에 해당하는 post를 업데이트 하거나 새로 생성
